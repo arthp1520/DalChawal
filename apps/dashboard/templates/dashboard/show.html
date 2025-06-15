@@ -5,31 +5,56 @@ Show
 {% endblock %}
 
 {% block body %}
+{% load static %}
+<style>
+  *{
+    font-family: 'Times New Roman', Times, serif;
+  }
+</style>
 
-<div class="row">
-  {% for post in posts %}
-  <div class="col-sm">
-    <div class="card" style="width: 18rem;">
-      <img src="{{post.image.url}}" class="card-img-top" alt="...">
-      <div class="card-body">
-        <h5 class="card-title">{{post.title}}</h5>
-        <p class="card-text">{{post.content}}</p>
-        <a href="{% url 'update_post' post_id=post.id %}" class="btn btn-warning">Edit</a>
-        <a href="{% url 'delete_post' post_id=post.id %}" class="btn btn-danger">Delete</a>
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <!-- {% for post in posts %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100" >
+          <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text">{{ post.content }}</p>
+            <a href="{% url 'update_post' post_id=post.id %}" class="btn btn-warning btn-sm">Edit</a>
+            <a href="{% url 'delete_post' post_id=post.id %}" class="btn btn-danger btn-sm">Delete</a>
+          </div>
+        </div>
       </div>
-    </div>
+    {% endfor %} --> <!--DESIGN IS JUST FOR BASIC CRETAE D BY SIR-->
   </div>
-  {% endfor %}
+  </div>
+<div class="container text-center">
+  <div class="row row-cols-2">
+    {% for post in posts %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100" >
+          <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text">{{ post.content }}</p>
+            <a href="{% url 'update_post' post_id=post.id %}" class="btn btn-warning btn-sm">Edit</a>
+            <a href="{% url 'delete_post' post_id=post.id %}" class="btn btn-danger btn-sm">Delete</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+  <hr class="my-5">
+
+  <!-- Optional Static Row Example
+  <div class="row text-center">
+    <div class="col">Column</div>
+    <div class="col">Column</div>
+    <div class="col">Column</div>
+  </div>
 </div>
 
 
-
-
-
-
-
-
-
-
-
-{% endblock %}
+{% endblock %} 

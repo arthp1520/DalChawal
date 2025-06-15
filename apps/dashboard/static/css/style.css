@@ -5,7 +5,9 @@ h2{
     color: yellow;
     background-color: bisque;
 } */
-
+*{
+    font-family: 'Times New Roman', Times, serif;
+}
 h1 {
     color: blue;
 }
