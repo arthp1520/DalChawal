@@ -1,0 +1,58 @@
+ {% extends 'dashboard/base.html' %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block body %} 
+{% load static %} 
+
+<style>
+    .profile-card {
+        max-width: 500px;
+        margin: 50px auto;
+        background-color: #fff;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    .profile-image {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-bottom: 20px;
+    }
+
+    .profile-name {
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .profile-occupation {
+        color: #777;
+        font-size: 18px;
+        margin-bottom: 25px;
+    }
+
+    .btn-custom {
+        margin: 10px 5px;
+    }
+</style>
+
+<div class="container">
+    <div class="profile-card">
+        <img src="{% static 'images/download.jpeg' %}" alt="Profile Photo" class="profile-image">
+        <div class="profile-name">Arth R. Agre</div>
+        <div class="profile-occupation">Web Developer</div>
+   
+        <a href="{% url 'show' %}" class="btn btn-primary btn-custom" >Show my Document</a>
+        <a href="{% url 'insert' %}" class="btn btn-success btn-custom">Add Document</a>
+        <a href="#" class="btn btn-success btn-custom">Edit</a>
+    </div>
+</div>
+</form>
+
+{% endblock %}

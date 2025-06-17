@@ -18,8 +18,8 @@
 from django.shortcuts import render, redirect
 from .models import Post
 # Create your views here.
-# def index(request):
-#     return render(request, 'dashboard/index.html')
+def index(request):
+    return render(request, 'dashboard/index.html')
 
 
 def show(request):
@@ -65,3 +65,15 @@ def delete_post(request, post_id):
     delete_post = Post.objects.get(id=post_id)
     delete_post.delete()
     return redirect('show')
+
+def profile(request):
+     return render(request, 'dashboard/profile.html')
+
+def edit_profile(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+        occupation = request.POST['occupation']
+        profile_image = request.FILES.get('profile_image')
+        # Save data to your model here...
+        return redirect('profile')
+    return render(request, 'dashboard/edit_profile.html')

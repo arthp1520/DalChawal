@@ -19,9 +19,19 @@ from django.urls import path,include
 from django.conf import settings
 from django.conf.urls.static import static
 
+# # project/urls.py while making regiter and login
+# from django.urls import path, include
+
+# urlpatterns = [
+#     ...
+#     path('accounts/', include('your_app_name.urls')),  # Use the correct app name
+# ]
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('apps.dashboard.urls')), #connected here
+
     # path('admin/', admin.site.urls),
     # path('', include('apps.dashboard.urls'))
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

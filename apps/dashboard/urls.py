@@ -19,9 +19,25 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    # path('', views.index, name='index')
-    path('', views.show, name='show'),
+    
+    path('', views.index, name='index'),
+    path('show/', views.show, name='show'),
     path('insert/', views.insert, name='insert'),
     path('update-post/<int:post_id>', views.update_post, name='update_post'),
     path('delete-post/<int:post_id>', views.delete_post, name='delete_post'),
+    path('profile/', views.profile, name='profile'),
+    path('profile/edit_profile/', views.edit_profile, name='edit_profile'),
+    
+
 ]
+
+# # accounts/urls.py -- while making regiter and login
+# from django.urls import path
+# from . import views
+# from django.contrib.auth import views as auth_views
+
+# urlpatterns = [
+#     path('register/', views.register_view, name='register'),
+#     path('login/', auth_views.LoginView.as_view(template_name='accounts/login.html'), name='login'),
+#     path('logout/', auth_views.LogoutView.as_view(next_page='login'), name='logout'),
+# ]

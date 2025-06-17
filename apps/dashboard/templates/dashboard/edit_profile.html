@@ -1,0 +1,71 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+Edit Profile
+{% endblock %}
+
+{% block body %}
+{% load static %}
+
+<style>
+    .edit-profile-card {
+        max-width: 600px;
+        margin: 50px auto;
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-label {
+        font-weight: 500;
+    }
+
+    .form-control {
+        margin-bottom: 15px;
+    }
+
+    .profile-preview {
+        width: 120px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 50%;
+        margin-bottom: 20px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+
+<div class="container">
+    <div class="edit-profile-card">
+        <h3 class="text-center mb-4">Edit Profile</h3>
+        <form action="{% url 'update_profile' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Profile Image Preview -->
+            <img src="{% static 'images/download.jpeg' %}" class="profile-preview" alt="Current Profile">
+
+            <div class="mb-3">
+                <label for="name" class="form-label">Full Name</label>
+                <input type="text" name="name" class="form-control" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="occupation" class="form-label">Occupation</label>
+                <input type="text" name="occupation" class="form-control" placeholder="Enter your occupation" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="profile_image" class="form-label">Profile Image</label>
+                <input type="file" name="profile_image" class="form-control">
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-success">Save Changes</button>
+                <a href="{% url 'profile' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

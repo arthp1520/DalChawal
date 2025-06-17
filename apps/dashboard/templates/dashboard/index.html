@@ -1,13 +1,94 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}
+index
+{% endblock %}
+
+{% block body %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="{% static 'dashboard/css/style.css' %}">
-</head>
-<body>
-    <h1>This is a my first web page</h1>
-</body>
-</html>
+<style>
+  *{
+    font-family: 'Times New Roman', Times, serif;
+  }
+
+  .card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+
+  }
+
+  .card img {
+    transition: transform 0.3s ease;
+  }
+
+  .card:hover img {
+    transform: scale(1.1);
+  }
+</style>
+
+<!-- <div class="container py-4">
+  <div class="row justify-content-center">
+    {% for post in posts %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100" >
+          <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text">{{ post.content }}</p>
+            <a href="{% url 'update_post' post_id=post.id %}" class="btn btn-warning btn-sm">Edit</a>
+            <a href="{% url 'delete_post' post_id=post.id %}" class="btn btn-danger btn-sm">Delete</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %} --> <!--DESIGN IS JUST FOR BASIC CRETAE D BY SIR
+  </div>
+  </div> -->
+<!-- <div class="container text-center">
+  <div class="row row-cols-2">
+    {% for post in posts %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100" >
+          <img src="{{ post.image.url }}" class="card-img-top" alt="{{ post.title }}">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ post.title }}</h5>
+            <p class="card-text">{{ post.content }}</p>
+            <a href="{% url 'update_post' post_id=post.id %}" class="btn btn-warning btn-sm">Edit</a>
+            <a href="{% url 'delete_post' post_id=post.id %}" class="btn btn-danger btn-sm">Delete</a>
+          </div> -->
+        <!-- </div>
+      </div>
+      
+    {% endfor %}
+  </div>
+</div> -->
+<h3 class="text-center my-5"> Our Users</h3>
+<div class="container mb-5">
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+    {% for i in "1234" %}
+    <div class="col">
+      <div class="card text-center h-100 shadow-sm">
+        <img src="{% static 'images/download.jpeg' %}" class="card-img-top rounded-circle mx-auto mt-3" alt="Profile" style="width: 100px; height: 100px; object-fit: cover;">
+        <div class="card-body">
+          <h5 class="card-title">User {{ forloop.counter }}</h5>
+          <p class="card-text text-muted">Frontend Developer {{ forloop.counter }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+  <!-- <hr class="my-5"> -->
+
+  <!-- Optional Static Row Example
+  <div class="row text-center">
+    <div class="col">Column</div>
+    <div class="col">Column</div>
+    <div class="col">Column</div>
+  </div>
+</div>
+
+
+{% endblock %} 
