@@ -18,10 +18,10 @@ def sign_in(request):
 
 def sign_up(request):
     if request.method == 'POST':
-        email_ = request.POST['email']
-        mobile_ = request.POST['mobile']
-        password_ = request.POST['password']
-        confirm_password_ = request.POST['confirm_password']
+        email_ = request.POST.gets('email')
+        mobile_ = request.POST.get('mobile')
+        password_ = request.POST.ge('password')
+        confirm_password_ = request.POST.get('confirm_password')
 
         if User.objects.filter(email=email_).exists():
             messages.error(request, "Email already exists")
@@ -73,10 +73,12 @@ def sign_up(request):
     return render(request, 'dashboard/sign_up.html')
 def sign_up(request):
     if request.method == 'POST':
-        email_ = request.POST['email']
-        mobile_ = request.POST['mobile']
-        password_ = request.POST['password']
-        confirm_password_ = request.POST['confirm_password']
+        email_ = request.POST.get('email')
+        # 
+        mobile_ = request.POST.get('mobile') 
+
+        password_ = request.POST.get('password')
+        confirm_password_ = request.POST.get('confirm_password')
 
         if User.objects.filter(email=email_).exists():
             messages.error(request, "Email already exists")
