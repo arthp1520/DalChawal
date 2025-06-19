@@ -39,40 +39,87 @@ def sign_up(request):
             messages.error(request, "Passwords do not match")
             return redirect('sign_up')
 
-        is_valid, message = is_valid_password(password_)
+        is_valid, message = is_valid_password(password_, message)
         if not is_valid:
             messages.error(request, message)
             return redirect('sign_up')
-        otp_ = random.randint(111111,999999)
-        # ✅ Directly create and activate user (no OTP)
-        # User.objects.create(
-        #     email=email_,
-        #     mobile=mobile_,
-        #     password=make_password(password_),
-        #     otp=otp_,
-        #     is_active=True
-        # )
-        
+
+        otp_ = random.randint(111111, 999999)
+
         user = User(
-             email=email_,
+            email=email_,
             mobile=mobile_,
             password=make_password(password_),
             otp=otp_,
-            is_active=True
-            
+            is_active=False  # False until OTP verified
         )
-        
+
+        subject = "Email Confirmation mail | ParaDox"
+        message = f"welcome to ParDox your OTP is | {otp_} , Keep learning and Sharing your Dox 👍"
+        from_email = settings.EMAIL_HOST_USER
+        recipient_list = [email_]
+
+        if send_mail(subject, message, from_email, recipient_list):
+            print("Email Sent")
+            user.save()  # ✅ FIXED
+            context = {
+                'email': email_
+            }
+            return redirect(request, 'dashboard/email_verify.html', context)
+
+        messages.success(request, "Account created successfully. Please sign in.")
+        return redirect('email_verify')
+
+    return render(request, 'dashboard/sign_up.html')
+def sign_up(request):
+    if request.method == 'POST':
+        email_ = request.POST['email']
+        mobile_ = request.POST['mobile']
+        password_ = request.POST['password']
+        confirm_password_ = request.POST['confirm_password']
+
+        if User.objects.filter(email=email_).exists():
+            messages.error(request, "Email already exists")
+            return redirect('sign_up')
+
+        if not is_valid_mobile_number(mobile_):
+            messages.error(request, "Invalid mobile number")
+            return redirect('sign_up')
+
+        if User.objects.filter(mobile=mobile_).exists():
+            messages.error(request, "Mobile already exists")
+            return redirect('sign_up')
+
+        if password_ != confirm_password_:
+            messages.error(request, "Passwords do not match")
+            return redirect('sign_up')
+
+        is_valid = is_valid_password(password_)
+        if not is_valid:
+            messages.error(request, message)
+            return redirect('sign_up')
+
+        otp_ = random.randint(111111, 999999)
+
+        user = User(
+            email=email_,
+            mobile=mobile_,
+            password=make_password(password_),
+            otp=otp_,
+            is_active=False  # False until OTP verified
+        )
         subject = "Email Confirmation mail | ParaDox"
         message = f"OTP | {otp_}"
         from_email = settings.EMAIL_HOST_USER
-        recipient_list = [f"{email_}"]
-        if send_mail(subject,message,from_email,recipient_list):
-            print("Email Sent")
-            User.save()
-            context={
-                'email':email_
+        recipient_list = [email_]
+
+        if send_mail(subject, message, from_email, recipient_list):
+            print("Email  Sent")
+            user.save()
+            context = {
+                'email': email_
             }
-            return render(request,'dashboard/email_verify.html',context)
+            return render(request, 'dashboard/email_verify.html', context)
 
         messages.success(request, "Account created successfully. Please sign in.")
         return redirect('email_verify')
