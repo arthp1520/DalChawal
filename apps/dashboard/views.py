@@ -4,16 +4,52 @@ from django.contrib import messages
 from .models import User, Post  # Ensure both models exist
 from .helpers import *
 from django.core.mail import send_mail
+from django.contrib.auth import authenticate, login
 from django.conf import settings
 import random
+from functools import wraps
+# from django.contrib.auth.models import User
+from .models import User  # or from apps.dashboard.models import User
 
 
 # ================================
 # USER AUTHENTICATION VIEWS
 # ================================
 
+from django.contrib.auth import authenticate, login  # Make sure these are imported
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.shortcuts import render, redirect
+
+from .models import User  # your custom model
+from django.contrib.auth.hashers import check_password
+
 def sign_in(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            print("User does not exist")
+            return redirect('sign_in')
+
+        if not user.is_active:
+            print("Account not verified")
+            return redirect('sign_in')
+
+        if check_password(password, user.password):
+            request.session['user_id'] = user.id
+            return redirect('index')
+        else:
+            print("Wrong password")
+            return redirect('sign_in')
+
     return render(request, 'dashboard/sign_in.html')
+
+    
+    
 
 
 def sign_up(request):
@@ -128,6 +164,28 @@ def sign_up(request):
 
     return render(request, 'dashboard/sign_up.html')
 
+def email_verify(request):
+    if request.method == 'POST':
+        email_ = request.POST['email']
+        otp_ = request.POST['otp']
+
+        try:
+            user = User.objects.get(email=email_)
+        except User.DoesNotExist:
+            messages.error(request, "User not found.")
+            return redirect('sign_up')
+
+        if str(otp_) != str(user.otp):
+            messages.error(request, "Invalid OTP")
+            return render(request, 'dashboard/email_verify.html', {'email': email_})
+
+        user.is_active = True
+        user.save()
+        messages.success(request, "Email verified! Please log in.")
+        return redirect('sign_in')
+
+    # 👇 This line is needed for initial page load (GET request)
+    return render(request, 'dashboard/email_verify.html')
 
 def forgot_password(request):
     return render(request, 'dashboard/forgot_password.html')

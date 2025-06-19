@@ -29,51 +29,65 @@
             </div>
 
             <div class="card-body px-4 py-3">
-              <form method="post">
+              <form method="post" action="{% url 'sign_in' %}">
                 {% csrf_token %}
                 <div class="mb-3">
                   <label for="email" class="form-label">Email</label>
-                  <input type="email" class="form-control form-control-lg" id="email" name="email" placeholder="Enter your email">
+                  <input type="email" class="form-control form-control-lg" id="email" name="email"
+                    placeholder="Enter your email">
                 </div>
                 <div class="mb-3">
                   <label for="password" class="form-label">Password</label>
-                  <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Enter your password">
+                  <input type="password" class="form-control form-control-lg" id="password" name="password"
+                    placeholder="Enter your password">
                 </div>
                 <div class="d-grid">
                   <button type="submit" class="btn btn-primary btn-lg mt-3">Sign in</button>
                 </div>
               </form>
             </div>
-
-            <div class="card-footer text-center bg-white border-0">
-              <p class="mt-3 mb-2">
-                <a href="{% url 'forgot_password' %}" class="text-decoration-none fw-semibold">Forgot Password?</a>
-              </p>
-              <p class="mb-0">
-                Don’t have an account?
-                <a href="{% url 'sign_up' %}" class="text-primary fw-bold text-decoration-none">Sign up</a>
-              </p>
+            <!-- just for error message -->
+            <!-- <div class="card-body px-4 py-3">
+              {% if messages %}
+              <div class="mt-2">
+                {% for message in messages %}
+                <div class="alert alert-danger" role="alert">
+                  {{ message }}
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %} -->
+              <!-- just for error message -->
+              
+              <div class="card-footer text-center bg-white border-0">
+                <p class="mt-3 mb-2">
+                  <a href="{% url 'forgot_password' %}" class="text-decoration-none fw-semibold">Forgot Password?</a>
+                </p>
+                <p class="mb-0">
+                  Don’t have an account?
+                  <a href="{% url 'sign_up' %}" class="text-primary fw-bold text-decoration-none">Sign up</a>
+                </p>
+              </div>
             </div>
+
           </div>
 
-        </div>
-
-        <!-- Right Side Banner -->
-        <div class="col-lg-6 d-none d-lg-block">
-          <div class="h-100 d-flex align-items-center justify-content-center">
-            <div class="position-relative p-4 rounded-4 bg-primary text-white text-center w-100"
-              style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg'); background-size: cover; background-position: center; min-height: 500px;">
-              <div class="bg-primary bg-opacity-75 w-100 h-100 position-absolute top-0 start-0 rounded-4"></div>
-              <div class="position-relative z-1">
-                <h4 class="fw-bold">"Knowledge grows, when Shared"</h4>
-                <!-- <p>The more effortless the writing looks, the more effort the writer actually put into the process.</p> -->
+          <!-- Right Side Banner -->
+          <div class="col-lg-6 d-none d-lg-block">
+            <div class="h-100 d-flex align-items-center justify-content-center">
+              <div class="position-relative p-4 rounded-4 bg-primary text-white text-center w-100"
+                style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg'); background-size: cover; background-position: center; min-height: 500px;">
+                <div class="bg-primary bg-opacity-75 w-100 h-100 position-absolute top-0 start-0 rounded-4"></div>
+                <div class="position-relative z-1">
+                  <h4 class="fw-bold">"Knowledge grows, when Shared"</h4>
+                  <!-- <p>The more effortless the writing looks, the more effort the writer actually put into the process.</p> -->
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
+        </div>
       </div>
-    </div>
   </main>
 
   <!-- Bootstrap 5 JS -->
