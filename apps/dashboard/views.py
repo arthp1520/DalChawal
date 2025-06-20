@@ -12,6 +12,10 @@ from functools import wraps
 from .models import User  # or from apps.dashboard.models import User
 from django.contrib import messages
 
+#for forgot pass
+from django.contrib.auth.models import User  # Or your custom user model
+
+
 
 # ================================
 # USER AUTHENTICATION VIEWS
@@ -142,10 +146,26 @@ def logout(request):
     messages.success(request,"You are Logout From ParaDox")
     return redirect('sign_in')
 
-@login_required
 def forgot_password(request):
-    return render(request, 'dashboard/forgot_password.html')
-
+    message = ""
+    
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            user = User.objects.get(email=email)
+            # WARNING: This assumes password is stored in plaintext (NOT recommended)
+            send_mail(
+                subject='Your Password Recovery',
+                message=f'Hello {user.name}, your password is: {user.password}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+            message = "Password sent to your email."
+        except User.DoesNotExist:
+            message = "No user found with this email."
+    
+    return render(request, 'dashboard/forgot_password.html', {'message': message})
 
 # ================================
 # DASHBOARD VIEWS
