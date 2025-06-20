@@ -26,11 +26,11 @@ from django.contrib.auth.hashers import check_password
 
 def sign_in(request):
     if request.method == 'POST':
-        email = request.POST.get('email')
+        email_ = request.POST.get('email')
         password = request.POST.get('password')
 
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(email=email_)
         except User.DoesNotExist:
             print("User does not exist")
             return redirect('sign_in')
@@ -45,76 +45,17 @@ def sign_in(request):
         else:
             print("Wrong password")
             return redirect('sign_in')
-
+    #return redirect('index')
     return render(request, 'dashboard/sign_in.html')
 
     
-    
-
 
 def sign_up(request):
     if request.method == 'POST':
-        email_ = request.POST.gets('email')
-        mobile_ = request.POST.get('mobile')
-        password_ = request.POST.ge('password')
-        confirm_password_ = request.POST.get('confirm_password')
-
-        if User.objects.filter(email=email_).exists():
-            messages.error(request, "Email already exists")
-            return redirect('sign_up')
-
-        if not is_valid_mobile_number(mobile_):
-            messages.error(request, "Invalid mobile number")
-            return redirect('sign_up')
-
-        if User.objects.filter(mobile=mobile_).exists():
-            messages.error(request, "Mobile already exists")
-            return redirect('sign_up')
-
-        if password_ != confirm_password_:
-            messages.error(request, "Passwords do not match")
-            return redirect('sign_up')
-
-        is_valid, message = is_valid_password(password_, message)
-        if not is_valid:
-            messages.error(request, message)
-            return redirect('sign_up')
-
-        otp_ = random.randint(111111, 999999)
-
-        user = User(
-            email=email_,
-            mobile=mobile_,
-            password=make_password(password_),
-            otp=otp_,
-            is_active=False  # False until OTP verified
-        )
-
-        subject = "Email Confirmation mail | ParaDox"
-        message = f"welcome to ParDox your OTP is | {otp_} , Keep learning and Sharing your Dox 👍"
-        from_email = settings.EMAIL_HOST_USER
-        recipient_list = [email_]
-
-        if send_mail(subject, message, from_email, recipient_list):
-            print("Email Sent")
-            user.save()  # ✅ FIXED
-            context = {
-                'email': email_
-            }
-            return redirect(request, 'dashboard/email_verify.html', context)
-
-        messages.success(request, "Account created successfully. Please sign in.")
-        return redirect('email_verify')
-
-    return render(request, 'dashboard/sign_up.html')
-def sign_up(request):
-    if request.method == 'POST':
-        email_ = request.POST.get('email')
-        # 
-        mobile_ = request.POST.get('mobile') 
-
-        password_ = request.POST.get('password')
-        confirm_password_ = request.POST.get('confirm_password')
+        email_ = request.POST['email']
+        mobile_ = request.POST['mobile']
+        password_ = request.POST['password']
+        confirm_password_ = request.POST['confirm_password']
 
         if User.objects.filter(email=email_).exists():
             messages.error(request, "Email already exists")
@@ -134,7 +75,7 @@ def sign_up(request):
 
         is_valid = is_valid_password(password_)
         if not is_valid:
-            messages.error(request, message)
+            messages.error(request,"not valid pass")
             return redirect('sign_up')
 
         otp_ = random.randint(111111, 999999)
@@ -146,34 +87,31 @@ def sign_up(request):
             otp=otp_,
             is_active=False  # False until OTP verified
         )
+
         subject = "Email Confirmation mail | ParaDox"
-        message = f"OTP | {otp_}"
+        message = f"welcome to ParDox your OTP is | {otp_} , Keep learning and Sharing your Dox 👍"
         from_email = settings.EMAIL_HOST_USER
         recipient_list = [email_]
 
         if send_mail(subject, message, from_email, recipient_list):
-            print("Email  Sent")
-            user.save()
+            print("Email Sent")
+            user.save()  
             context = {
                 'email': email_
             }
-            return render(request, 'dashboard/email_verify.html', context)
-
-        messages.success(request, "Account created successfully. Please sign in.")
-        return redirect('email_verify')
-
+            return render(request,'dashboard/email_verify.html', context)
+            # return redirect(f"/email_verify/&email={user.email}")
+        
     return render(request, 'dashboard/sign_up.html')
+
 
 def email_verify(request):
     if request.method == 'POST':
         email_ = request.POST['email']
         otp_ = request.POST['otp']
 
-        try:
-            user = User.objects.get(email=email_)
-        except User.DoesNotExist:
-            messages.error(request, "User not found.")
-            return redirect('sign_up')
+        user = User.objects.get(email=email_)
+        
 
         if str(otp_) != str(user.otp):
             messages.error(request, "Invalid OTP")
@@ -184,7 +122,7 @@ def email_verify(request):
         messages.success(request, "Email verified! Please log in.")
         return redirect('sign_in')
 
-    # 👇 This line is needed for initial page load (GET request)
+    #  This line is needed for initial page load (GET request)
     return render(request, 'dashboard/email_verify.html')
 
 def forgot_password(request):
@@ -256,3 +194,65 @@ def edit_profile(request):
         return redirect('profile')
 
     return render(request, 'dashboard/edit_profile.html')
+
+
+
+
+
+
+
+# def sign_up(request):
+#     if request.method == 'POST':
+#         email_ = request.POST.get('email')
+#         # #         mobile_ = request.POST.get('mobile') 
+
+#         password_ = request.POST.get('password')
+#         confirm_password_ = request.POST.get('confirm_password')
+
+#         if User.objects.filter(email=email_).exists():
+#             messages.error(request, "Email already exists")
+#             return redirect('sign_up')
+
+#         if not is_valid_mobile_number(mobile_):
+#             messages.error(request, "Invalid mobile number")
+#             return redirect('sign_up')
+
+#         if User.objects.filter(mobile=mobile_).exists():
+#             messages.error(request, "Mobile already exists")
+#             return redirect('sign_up')
+
+#         if password_ != confirm_password_:
+#             messages.error(request, "Passwords do not match")
+#             return redirect('sign_up')
+
+#         is_valid = is_valid_password(password_)
+#         if not is_valid:
+#             messages.error(request, message)
+#             return redirect('sign_up')
+
+#         otp_ = random.randint(111111, 999999)
+
+#         user = User(
+#             email=email_,
+#             mobile=mobile_,
+#             password=make_password(password_),
+#             otp=otp_,
+#             is_active=False  # False until OTP verified
+#         )
+#         subject = "Email Confirmation mail | ParaDox "
+#         message = f"OTP | {otp_}"
+#         from_email = settings.EMAIL_HOST_USER
+#         recipient_list = [email_]
+
+#         if send_mail(subject, message, from_email, recipient_list):
+#             print("Email  Sent")
+#             user.save()
+#             context = {
+#                 'email': email_
+#             }
+#             return render(request, 'dashboard/email_verify.html', context)
+
+#         messages.success(request, "Account created successfully. Please sign in.")
+#         return redirect('email_verify')
+
+#     return render(request, 'dashboard/sign_up.html')
