@@ -68,6 +68,7 @@ urlpatterns = [
     path('profile/', views.profile, name='profile'),
     path('profile/edit_profile/', views.edit_profile, name='edit_profile'),
     path('email_verify/', views.email_verify, name='email_verify'),
+    path('logout/',views.logout,name='logout'),
     
 
 ]
