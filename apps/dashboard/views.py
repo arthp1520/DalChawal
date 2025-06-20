@@ -100,7 +100,8 @@ def sign_up(request):
         )
 
         subject = "Email Confirmation mail | ParaDox"
-        message = f"welcome to ParDox your OTP is | {otp_} , Keep learning and Sharing your Dox 👍"
+        message = f"Welcome to ParaDox, {name_}! Your OTP is: {otp_}. Keep learning and sharing your Dox 👍"
+
         from_email = settings.EMAIL_HOST_USER
         recipient_list = [email_]
 
