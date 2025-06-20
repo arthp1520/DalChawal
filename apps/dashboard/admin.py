@@ -42,7 +42,7 @@ from django.contrib import admin
 from .models import User  # or your model name
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('email', 'mobile', 'is_active', 'otp')  # Customize this as needed
+    list_display = ('name','email', 'mobile', 'is_active', 'otp')  # Customize this as needed
     search_fields = ('email', 'mobile')
 
 admin.site.register(User, UserAdmin)

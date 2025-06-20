@@ -38,6 +38,7 @@ class User(models.Model):
     # name = models.CharField(max_length=100, blank=True, null=True)  # Optional but useful
     # enrollment = models.CharField(max_length=100, blank=True, null=True)
     email = models.EmailField(unique=True)
+    name = models.CharField(max_length=100, default="User", null=True, blank=True)
     mobile = models.CharField(max_length=14, unique=True)
     password = models.CharField(max_length=255)
     otp = models.IntegerField(null=True, blank=True)  # REQUIRED

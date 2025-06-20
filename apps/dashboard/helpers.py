@@ -1,4 +1,5 @@
 import re
+from django import template
 
 def is_email_verified(email):
     # Basic email regex pattern

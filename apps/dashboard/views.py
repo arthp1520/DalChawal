@@ -10,6 +10,7 @@ import random
 from functools import wraps
 # from django.contrib.auth.models import User
 from .models import User  # or from apps.dashboard.models import User
+from django.contrib import messages
 
 
 # ================================
@@ -60,6 +61,7 @@ def sign_in(request):
 
 def sign_up(request):
     if request.method == 'POST':
+        name_= request.POST['name']
         email_ = request.POST['email']
         mobile_ = request.POST['mobile']
         password_ = request.POST['password']
@@ -89,6 +91,7 @@ def sign_up(request):
         otp_ = random.randint(111111, 999999)
 
         user = User(
+            name=name_,
             email=email_,
             mobile=mobile_,
             password=make_password(password_),
@@ -124,7 +127,6 @@ def email_verify(request):
         if str(otp_) != str(user.otp):
             messages.error(request, "Invalid OTP")
             return render(request, 'dashboard/email_verify.html', {'email': email_})
-
         user.is_active = True
         user.save()
         messages.success(request, "Email verified! Please log in.")
@@ -197,7 +199,18 @@ def delete_post(request, post_id):
 # ================================
 @login_required
 def profile(request):
-    return render(request, 'dashboard/profile.html')
+    user_id = request.session.get('user_id')
+    
+    if not user_id:
+        return redirect('sign_in')  # Or your login view name
+
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return redirect('sign_in')
+
+    return render(request, 'dashboard/profile.html', {'user': user})
+
 
 @login_required
 def edit_profile(request):
