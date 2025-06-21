@@ -64,15 +64,21 @@ def sign_in(request):
     
 
 def sign_up(request):
+    print("here....1")
     if request.method == 'POST':
+        print("here....2")
         name_= request.POST['name']
         email_ = request.POST['email']
         mobile_ = request.POST['mobile']
         password_ = request.POST['password']
         confirm_password_ = request.POST['confirm_password']
-
+        
+        if not  is_email_verified:
+            print("Invalid Email")
+            return redirect('sign_up')
+            
         if User.objects.filter(email=email_).exists():
-            messages.error(request, "Email already exists")
+            print(request, "Email already exists")
             return redirect('sign_up')
 
         if not is_valid_mobile_number(mobile_):
@@ -86,58 +92,66 @@ def sign_up(request):
         if password_ != confirm_password_:
             messages.error(request, "Passwords do not match")
             return redirect('sign_up')
+        
+        if not is_valid_password(password_)[0]:
+            print(is_valid_password(password_)[1])
+            return redirect('signu_up')
+        
+        
+        print(make_password(password_),'-------')
+        
+        print("here....3")
 
-        is_valid = is_valid_password(password_)
-        if not is_valid:
-            messages.error(request,"not valid pass")
-            return redirect('sign_up')
-
-        otp_ = random.randint(111111, 999999)
-
-        user = User(
+        user = User.objects.create(
             name=name_,
             email=email_,
             mobile=mobile_,
             password=make_password(password_),
-            otp=otp_,
-            is_active=False  # False until OTP verified
         )
-
+        user.save()
+        otp_ = random.randint(111111, 999999)
+        print("here....4")
         subject = "Email Confirmation mail | ParaDox"
         message = f"Welcome to ParaDox, {name_}! Your OTP is: {otp_}. Keep learning and sharing your Dox 👍"
 
         from_email = settings.EMAIL_HOST_USER
-        recipient_list = [email_]
-
-        if send_mail(subject, message, from_email, recipient_list):
-            print("Email Sent")
-            user.save()  
-            context = {
-                'email': email_
-            }
-            return render(request,'dashboard/email_verify.html', context)
-            # return redirect(f"/email_verify/&email={user.email}")
+        recipient_list = [f"{email_}"]
+        send_mail(subject, message, from_email, recipient_list)
+        user.otp=otp_
+        user.save()  
+        print("Email Sent check your Mail Acount")
+        context = {
+            'email': email_
+             }
+        return render(request,'dashboard/email_verify.html', context)
         
     return render(request, 'dashboard/sign_up.html')
 
-@login_required
 def email_verify(request):
+    print("e1----")
     if request.method == 'POST':
         email_ = request.POST['email']
         otp_ = request.POST['otp']
+        print("e1----el")
 
-        user = User.objects.get(email=email_)
+        if not User.objects.filter(email=email_).exists():
+            messages.info(request, "email doesnot exists")
+            print("e1----e1----e1---e1")
+            return render(request, 'dashboard/email_verify.html', {'email' : email_})
+
         
-
-        if str(otp_) != str(user.otp):
-            messages.error(request, "Invalid OTP")
-            return render(request, 'dashboard/email_verify.html', {'email': email_})
-        user.is_active = True
-        user.save()
-        messages.success(request, "Email verified! Please log in.")
-        return redirect('sign_in')
-
-    #  This line is needed for initial page load (GET request)
+        user = User.objects.get(email=email_)
+      
+        if int(otp_) == int(user.otp):
+            user.is_active = True
+            print("e2----")
+            user.save()
+            return redirect('sign_in')
+        messages.error(request,"Invalid OTP")
+        return render(request, 'dashboard/sign_in.html', {'email' : email_})
+       
+        
+    
     return render(request, 'dashboard/email_verify.html')
 
 def logout(request):
@@ -147,39 +161,39 @@ def logout(request):
     return redirect('sign_in')
 
 def forgot_password(request):
-    message = ""
+    # message = ""
     
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        try:
-            user = User.objects.get(email=email)
-            # WARNING: This assumes password is stored in plaintext (NOT recommended)
-            send_mail(
-                subject='Your Password Recovery',
-                message=f'Hello {user.name}, your password is: {user.password}',
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-                fail_silently=False,
-            )
-            message = "Password sent to your email."
-        except User.DoesNotExist:
-            message = "No user found with this email."
+    # if request.method == 'POST':
+    #     email = request.POST.get('email')
+    #     try:
+    #         user = User.objects.get(email=email)
+    #         # WARNING: This assumes password is stored in plaintext (NOT recommended)
+    #         send_mail(
+    #             subject='Your Password Recovery',
+    #             message=f'Hello {user.name}, your password is: {user.password}',
+    #             from_email=settings.DEFAULT_FROM_EMAIL,
+    #             recipient_list=[email],
+    #             fail_silently=False,
+    #         )
+    #         message = "Password sent to your email."
+    #     except User.DoesNotExist:
+    #         message = "No user found with this email."
     
-    return render(request, 'dashboard/forgot_password.html', {'message': message})
+    return render(request, 'dashboard/forgot_password.html')
 
 # ================================
 # DASHBOARD VIEWS
 # ================================
-@login_required
+
 def index(request):
     return render(request, 'dashboard/index.html')
 
-@login_required
+
 def show(request):
     posts = Post.objects.all()
     return render(request, 'dashboard/show.html', {'posts': posts})
 
-@login_required
+
 def insert(request):
     if request.method == 'POST':
         image_ = request.FILES['post_image']
@@ -195,7 +209,7 @@ def insert(request):
 
     return render(request, 'dashboard/insert.html')
 
-@login_required
+
 def update_post(request, post_id):
     post = Post.objects.get(id=post_id)
     if request.method == 'POST':
@@ -208,7 +222,7 @@ def update_post(request, post_id):
 
     return render(request, 'dashboard/update.html', {'post': post})
 
-@login_required
+
 def delete_post(request, post_id):
     post = Post.objects.get(id=post_id)
     post.delete()
@@ -218,7 +232,7 @@ def delete_post(request, post_id):
 # ================================
 # PROFILE VIEWS
 # ================================
-@login_required
+
 def profile(request):
     user_id = request.session.get('user_id')
     
@@ -233,7 +247,7 @@ def profile(request):
     return render(request, 'dashboard/profile.html', {'user': user})
 
 
-@login_required
+
 def edit_profile(request):
     if request.method == 'POST':
         name = request.POST['name']
