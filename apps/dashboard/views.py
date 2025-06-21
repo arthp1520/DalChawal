@@ -170,7 +170,7 @@ def email_verify(request):
 def logout(request):
     del request.session['user_id']
     print("Now, you are logged Out")
-    messages.success(request,"You are Logout From ParaDox")
+    messages.success(request, "You have successfully logged out from ParaDox.", extra_tags='logout')
     return redirect('sign_in')
 
 def forgot_password(request):
