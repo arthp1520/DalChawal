@@ -55,6 +55,18 @@
 </head>
 
 <body>
+    {% if error %}
+<div class="alert alert-danger text-center" role="alert">
+  {{ error }}
+</div>
+{% endif %}
+
+{% if success %}
+<div class="alert alert-success text-center" role="alert">
+  {{ success }}
+</div>
+{% endif %}
+
   <main class="main-content mt-0">
     <div class="header-bg text-white py-5">
       <div class="container">

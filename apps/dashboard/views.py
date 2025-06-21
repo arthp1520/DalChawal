@@ -46,19 +46,22 @@ def sign_in(request):
             user = User.objects.get(email=email_)
         except User.DoesNotExist:
             print("User does not exist")
-            return redirect('sign_in')
+            return render(request, 'dashboard/sign_in.html', {'error': "User Does Not exist"})
+            # return redirect('sign_in') it was commented while we want to show message on front
 
         if not user.is_active:
             print("Account not verified")
-            return redirect('sign_in')
+            return render(request, 'dashboard/sign_in.html', {'error': "Your Account is not verified"})
+            # return redirect('sign_in')it was commented while we want to show message on front
 
         if check_password(password, user.password):
             request.session['user_id'] = user.id
             return redirect('index')
         else:
             print("Wrong password")
-            return redirect('sign_in')
-    #return redirect('index')
+            return render(request, 'dashboard/sign_in.html', {'error': "Wrong Password Please Try Again"})
+            # return redirect('sign_in')it was commented while we want to show message on front
+            # return redirect('index')
     return render(request, 'dashboard/sign_in.html')
 
     
@@ -75,23 +78,28 @@ def sign_up(request):
         
         if not  is_email_verified:
             print("Invalid Email")
-            return redirect('sign_up')
+            return render(request, 'dashboard/sign_up.html', {'error': "Provide Valid Mail id"})
+            # return redirect('sign_up')it was commented while we want to show message on front
             
         if User.objects.filter(email=email_).exists():
             print(request, "Email already exists")
-            return redirect('sign_up')
+            return render(request, 'dashboard/sign_up.html', {'error': "Email Already exist please Login"})
+            # return redirect('sign_up')it was commented while we want to show message on front
 
         if not is_valid_mobile_number(mobile_):
             messages.error(request, "Invalid mobile number")
-            return redirect('sign_up')
+            return render(request, 'dashboard/sign_up.html', {'error': "please provide +91 "})
+            # return redirect('sign_up')it was commented while we want to show message on front
 
         if User.objects.filter(mobile=mobile_).exists():
             messages.error(request, "Mobile already exists")
-            return redirect('sign_up')
+            return render(request, 'dashboard/sign_up.html', {'error': "Mobile Already Exist"})
+            # return redirect('sign_up')it was commented while we want to show message on front
 
         if password_ != confirm_password_:
             messages.error(request, "Passwords do not match")
-            return redirect('sign_up')
+            return render(request, 'dashboard/sign_up.html', {'error': "Password Does Not Match"})
+            # return redirect('sign_up')it was commented while we want to show message on front
         
         if not is_valid_password(password_)[0]:
             print(is_valid_password(password_)[1])
@@ -123,6 +131,7 @@ def sign_up(request):
         context = {
             'email': email_
              }
+
         return render(request,'dashboard/email_verify.html', context)
         
     return render(request, 'dashboard/sign_up.html')
@@ -137,7 +146,11 @@ def email_verify(request):
         if not User.objects.filter(email=email_).exists():
             messages.info(request, "email doesnot exists")
             print("e1----e1----e1---e1")
-            return render(request, 'dashboard/email_verify.html', {'email' : email_})
+            
+            context = {
+            'email': email_,
+            }
+            return render(request, 'dashboard/email_verify.html', context)
 
         
         user = User.objects.get(email=email_)
@@ -184,16 +197,16 @@ def forgot_password(request):
 # ================================
 # DASHBOARD VIEWS
 # ================================
-
+@login_required
 def index(request):
     return render(request, 'dashboard/index.html')
 
-
+@login_required
 def show(request):
     posts = Post.objects.all()
     return render(request, 'dashboard/show.html', {'posts': posts})
 
-
+@login_required
 def insert(request):
     if request.method == 'POST':
         image_ = request.FILES['post_image']
@@ -209,7 +222,7 @@ def insert(request):
 
     return render(request, 'dashboard/insert.html')
 
-
+@login_required
 def update_post(request, post_id):
     post = Post.objects.get(id=post_id)
     if request.method == 'POST':
@@ -222,7 +235,7 @@ def update_post(request, post_id):
 
     return render(request, 'dashboard/update.html', {'post': post})
 
-
+@login_required
 def delete_post(request, post_id):
     post = Post.objects.get(id=post_id)
     post.delete()
@@ -232,7 +245,7 @@ def delete_post(request, post_id):
 # ================================
 # PROFILE VIEWS
 # ================================
-
+@login_required
 def profile(request):
     user_id = request.session.get('user_id')
     
@@ -247,13 +260,6 @@ def profile(request):
     return render(request, 'dashboard/profile.html', {'user': user})
 
 
-
+@login_required
 def edit_profile(request):
-    if request.method == 'POST':
-        name = request.POST['name']
-        occupation = request.POST['occupation']
-        profile_image = request.FILES.get('profile_image')
-        # Update logic here if using request.user
-        return redirect('profile')
-
     return render(request, 'dashboard/edit_profile.html')

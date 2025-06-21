@@ -41,6 +41,11 @@
 </head>
 
 <body class="bg-light">
+  {% if error %}
+<div class="alert alert-danger text-center" role="alert">
+  {{ error }}
+</div>
+{% endif %}
 
   <main class="min-vh-100 d-flex align-items-center justify-content-center">
     <div class="container">
