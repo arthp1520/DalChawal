@@ -168,9 +168,10 @@ def email_verify(request):
     return render(request, 'dashboard/email_verify.html')
 
 def logout(request):
+    user = User.objects.get(id=request.session['user_id']) 
+    messages.success(request, f"{user.name}, you have successfully logged out from ParaDox. Keep Learning! ✌️🤞", extra_tags='logout')
     del request.session['user_id']
     print("Now, you are logged Out")
-    messages.success(request, "You have successfully logged out from ParaDox.", extra_tags='logout')
     return redirect('sign_in')
 
 def forgot_password(request):
