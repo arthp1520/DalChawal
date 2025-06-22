@@ -13,7 +13,7 @@
                            <h5 class="card-title">
                             <a href="{% url 'public_profile' user.id %}" class="text-decoration-none text-dark">@{{ user.name }}</a>
                           </h5>
-                            <p class="fw-bold text-dark">{{ user.bio|default:"No bio added." }}</p>
+                            <p class="fw-bold text-dark">{{ user.bio|default:"No bio added yet." }}</p>
                             <form method="post" action="{% url 'toggle_follow' user.id %}">
                                 {% csrf_token %}
                                 {% if user in current_user.following.all %}
