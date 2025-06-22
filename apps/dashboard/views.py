@@ -33,6 +33,9 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from .models import Document
+from .models import User, Post, Document  # ✅ Make sure Document is added here
+
 
 def login_required(view_func):
     @wraps(view_func)
@@ -208,7 +211,46 @@ def forgot_password(request):
 # ================================
 @login_required
 def index(request):
-    return render(request, 'dashboard/index.html')
+    query = request.GET.get('query')
+    user_id = request.session.get('user_id')
+    current_user = User.objects.get(id=user_id)
+
+    if query:
+        users = User.objects.filter(name__icontains=query).exclude(id=user_id)
+    else:
+        users = User.objects.exclude(id=user_id)
+
+    return render(request, 'dashboard/index.html', {
+        'users': users,
+        'current_user': current_user
+    })
+
+@login_required
+def public_profile(request, user_id):
+    user_profile = User.objects.get(id=user_id)
+    documents = Document.objects.filter(user=user_profile).order_by('-uploaded_at')
+
+    followers_count = user_profile.followers.count()
+    following_count = user_profile.following.count()
+
+    return render(request, 'dashboard/public_profile.html', {
+        'user_profile': user_profile,
+        'documents': documents,
+        'followers_count': followers_count,
+        'following_count': following_count
+    })
+
+@login_required
+def toggle_follow(request, user_id):
+    current_user = User.objects.get(id=request.session['user_id'])
+    target_user = User.objects.get(id=user_id)
+
+    if target_user in current_user.following.all():
+        current_user.following.remove(target_user)
+    else:
+        current_user.following.add(target_user)
+
+    return redirect('index')
 
 @login_required
 def show(request):
@@ -257,19 +299,57 @@ def delete_post(request, post_id):
 @login_required
 def profile(request):
     user_id = request.session.get('user_id')
-    
-    if not user_id:
-        return redirect('sign_in')  # Or your login view name
+    user = User.objects.get(id=user_id)
 
     try:
         user = User.objects.get(id=user_id)
     except User.DoesNotExist:
         return redirect('sign_in')
 
-    return render(request, 'dashboard/profile.html', {'user': user})
+    if request.method == 'POST' and request.FILES.get('document'):
+        uploaded_file = request.FILES['document']
+        Document.objects.create(user=user, file=uploaded_file)
+        messages.success(request, "Document uploaded successfully.")
+
+    uploaded_docs = Document.objects.filter(user=user).order_by('-uploaded_at')
+    followers_count = user.followers.count()
+    following_count = user.following.count()
+  
+    return render(request, 'dashboard/profile.html', {
+        'user': user,
+        'uploaded_docs': uploaded_docs,
+        'followers_count': followers_count,
+        'following_count': following_count
+            })
+   
 
 
-
+@login_required
 def edit_profile(request):
- render(request, 'dashboard/edit_profile.html', {'user': user})
+    user = User.objects.get(id=request.session['user_id'])
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        bio = request.POST.get('bio')
+
+        user.name = name
+        user.bio = bio
+        user.save()
+
+        return redirect('profile')
+
+    return render(request, 'dashboard/edit_profile.html', {'user': user})
+
+
+def delete_document(request, doc_id):
+    user_id = request.session.get('user_id')
+    try:
+        document = Document.objects.get(id=doc_id, user_id=user_id)
+        document.file.delete()  # Delete the file from media folder
+        document.delete()       # Delete the DB record
+        messages.success(request, "Document deleted successfully.")
+    except Document.DoesNotExist:
+        messages.error(request, "Document not found or not authorized.")
+    
+    return redirect('profile')
 
