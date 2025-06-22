@@ -29,6 +29,11 @@ from django.shortcuts import render, redirect
 from .models import User  # your custom model
 from django.contrib.auth.hashers import check_password
 
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
+
 def login_required(view_func):
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
@@ -128,6 +133,8 @@ def sign_up(request):
         user.otp=otp_
         user.save()  
         print("Email Sent check your Mail Acount")
+        user = User.objects.filter(email=email_).first()
+        print(user.email)
         context = {
             'email': email_
              }
@@ -146,9 +153,10 @@ def email_verify(request):
         if not User.objects.filter(email=email_).exists():
             messages.info(request, "email doesnot exists")
             print("e1----e1----e1---e1")
-            
+            print(user.email) # this part shows the euser mail id to pass in html form
             context = {
-            'email': email_,
+            'email' : user.email, #this passes the user mail id
+            'email': email_ #this passes admin  mail id (agrearth22@gmail.com)
             }
             return render(request, 'dashboard/email_verify.html', context)
 
@@ -261,6 +269,7 @@ def profile(request):
     return render(request, 'dashboard/profile.html', {'user': user})
 
 
-@login_required
+
 def edit_profile(request):
-    return render(request, 'dashboard/edit_profile.html')
+ render(request, 'dashboard/edit_profile.html', {'user': user})
+

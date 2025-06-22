@@ -73,29 +73,32 @@
 
 <body>
 
-  {% if success %}
+
+  
+  
+  
+  <!-- {% if user %}
   <div class="alert alert-success text-center" role="alert">
     {{ success }}
   </div>
-  {% endif %}
-
-
-  {% if user %}
-  <div class="alert alert-success text-center" role="alert">
-    Hello {{ user.name }}, email has been sent to your mail {{ user.email }}
-  </div>
-  {% endif %}
-
+  {% endif %} -->
+  
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-md-5">
         <div class="card p-4">
           <h3 class="text-center mb-4">Email Verification</h3>
+          <!-- {% if success %}
+          <div class="alert alert-success text-center position-absolute top-0 start-50 translate-middle-x mt-3 w-50" role="alert">
+            {{ success }}
+          </div>
+        {% endif %} -->
           <form method="POST" action="{% url 'email_verify' %}">
             {% csrf_token %}
             <input type="hidden" name="email" value="{{email}}">
             <div class="mb-3">
-              <label for="otp" class="form-label">Enter OTP sent to your email</label>
+              <label for="otp" class="form-label">Enter OTP sent to your email  {{email}} </label>
+               <!--{{email}} is for passing the user mail id-->
               <input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP"
                 style="color: #000000;">
             </div>
