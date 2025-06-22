@@ -36,6 +36,9 @@ from django.contrib.auth.hashers import make_password
 from .models import Document
 from .models import User, Post, Document  # ✅ Make sure Document is added here
 
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Document  
+from django.contrib import messages 
 
 def login_required(view_func):
     @wraps(view_func)
@@ -274,17 +277,22 @@ def insert(request):
     return render(request, 'dashboard/insert.html')
 
 @login_required
-def update_post(request, post_id):
-    post = Post.objects.get(id=post_id)
-    if request.method == 'POST':
-        post.title = request.POST['title']
-        post.content = request.POST['content']
-        if request.FILES.get('post_image'):
-            post.image = request.FILES['post_image']
-        post.save()
-        return redirect('show')
+def update_document(request, doc_id):
+    document = Document.objects.get(id=doc_id)
 
-    return render(request, 'dashboard/update.html', {'post': post})
+    if request.method == 'POST':
+        document.title = request.POST.get('title')
+        document.description = request.POST.get('description')
+
+        if request.FILES.get('document'):
+            document.file = request.FILES['document']
+        
+        document.save()
+        return redirect('profile')  # or wherever you want to redirect
+
+    return render(request, 'dashboard/update_document.html', {'document': document})
+
+
 
 @login_required
 def delete_post(request, post_id):
@@ -299,7 +307,6 @@ def delete_post(request, post_id):
 @login_required
 def profile(request):
     user_id = request.session.get('user_id')
-    user = User.objects.get(id=user_id)
 
     try:
         user = User.objects.get(id=user_id)
@@ -308,19 +315,30 @@ def profile(request):
 
     if request.method == 'POST' and request.FILES.get('document'):
         uploaded_file = request.FILES['document']
-        Document.objects.create(user=user, file=uploaded_file)
+        title = request.POST.get('title', '')
+        description = request.POST.get('description', '')
+
+        Document.objects.create(
+            user=user,
+            file=uploaded_file,
+            title=title,
+            description=description
+        )
         messages.success(request, "Document uploaded successfully.")
 
     uploaded_docs = Document.objects.filter(user=user).order_by('-uploaded_at')
     followers_count = user.followers.count()
     following_count = user.following.count()
-  
+
     return render(request, 'dashboard/profile.html', {
         'user': user,
         'uploaded_docs': uploaded_docs,
         'followers_count': followers_count,
         'following_count': following_count
-            })
+    })
+
+
+            
    
 
 

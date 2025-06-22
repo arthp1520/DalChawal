@@ -3,13 +3,13 @@
 
 {% block body %}
 <div class="container mt-5">
- <h2>@{{ user_profile.name }}</h2>
-<p class="fw-bold text-dark">{{ user_profile.bio|default:"This user has not added a bio yet." }}</p>
+  <h2>@{{ user_profile.name }}</h2>
+  <p class="fw-bold text-dark">{{ user_profile.bio|default:"This user has not added a bio yet." }}</p>
 
-<div class="d-flex gap-3">
-  <div><strong>{{ followers_count }}</strong> Followers</div>
-  <div><strong>{{ following_count }}</strong> Following</div>
-</div>
+  <div class="d-flex gap-3">
+    <div><strong>{{ followers_count }}</strong> Followers</div>
+    <div><strong>{{ following_count }}</strong> Following</div>
+  </div>
 
   <hr>
 
@@ -17,9 +17,13 @@
   {% if documents %}
     <ul class="list-group">
       {% for doc in documents %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <span>{{ doc.file.name|slice:"10:" }}</span>
-          <a href="{{ doc.file.url }}" class="btn btn-outline-primary btn-sm" download>Download</a>
+        <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+          <div>
+            <strong>{{ doc.title }}</strong><br>
+            <small class="text-muted">{{ doc.description|default:"No description provided." }}</small><br>
+            <span class="text-muted small">{{ doc.file.name|slice:"10:" }}</span>
+          </div>
+          <a href="{{ doc.file.url }}" class="btn btn-outline-primary btn-sm mt-2 mt-md-0" download>Download</a>
         </li>
       {% endfor %}
     </ul>

@@ -3,23 +3,27 @@
 
 {% block body %}
 <div class="container mt-5">
-    <h2 class="mb-4">Explore Profiles</h2>
+    <h2 class="mb-4 text-center text-primary">Explore Profiles</h2>
+
     {% if users %}
-        <div class="row">
+        <div class="row justify-content-center">
             {% for user in users %}
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm border-0 p-3" style="background-color: #f0f8ff; border-radius: 15px;">
+                <div class="col-md-4 mb-4">
+                    <div class="card shadow-sm border-0" style="background-color: #e3f2fd; border-radius: 15px;">
                         <div class="card-body text-center">
-                           <h5 class="card-title">
-                            <a href="{% url 'public_profile' user.id %}" class="text-decoration-none text-dark">@{{ user.name }}</a>
-                          </h5>
-                            <p class="fw-bold text-dark">{{ user.bio|default:"No bio added yet." }}</p>
+                            <h5 class="card-title mb-2">
+                                <a href="{% url 'public_profile' user.id %}" class="text-decoration-none text-dark fw-bold">
+                                    @{{ user.name }}
+                                </a>
+                            </h5>
+                            <p class="text-muted mb-3">{{ user.bio|default:"No bio added yet." }}</p>
+
                             <form method="post" action="{% url 'toggle_follow' user.id %}">
                                 {% csrf_token %}
                                 {% if user in current_user.following.all %}
-                                    <button type="submit" class="btn btn-danger btn-sm">Unfollow</button>
+                                    <button type="submit" class="btn btn-outline-danger btn-sm px-4">Unfollow</button>
                                 {% else %}
-                                    <button type="submit" class="btn btn-primary btn-sm">Follow</button>
+                                    <button type="submit" class="btn btn-outline-primary btn-sm px-4">Follow</button>
                                 {% endif %}
                             </form>
                         </div>
@@ -28,7 +32,7 @@
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-muted">No users found.</p>
+        <p class="text-center text-muted">No users found.</p>
     {% endif %}
 </div>
 {% endblock %}
