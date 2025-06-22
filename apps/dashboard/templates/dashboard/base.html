@@ -19,12 +19,14 @@
 
     <style>
         body {
-            background-color: #e3f2fd; /* sky blue background */
+            background-color: #e3f2fd;
+            /* sky blue background */
             font-family: 'Segoe UI', sans-serif;
         }
 
         .navbar {
-            background-color: #b0bec5 !important; /* grey theme */
+            background-color: #b0bec5 !important;
+            /* grey theme */
         }
 
         .navbar-brand {
@@ -46,6 +48,11 @@
             width: 45px;
             height: 45px;
             object-fit: cover;
+        }
+
+        .navbar-nav .nav-item img:hover {
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
         }
     </style>
 
@@ -70,7 +77,8 @@
             <!-- Centered Search Bar -->
             <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
                 <form class="d-flex" action="#" method="GET" style="width: 350px;">
-                    <input class="form-control me-2" type="search" name="query" placeholder="Search Profiles..." aria-label="Search">
+                    <input class="form-control me-2" type="search" name="query" placeholder="Search Profiles..."
+                        aria-label="Search">
                     <button class="btn btn-outline-dark" type="submit">Search</button>
                 </form>
             </div>
@@ -79,7 +87,7 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item">
                     <a href="{% url 'profile' %}">
-                        <img src="{% static 'images/default-profile-icon.jpg' %}" alt="Profile">
+                        <img src="{{ user.profile_image.url }}" alt="Profile" class="ms-2">
                     </a>
                 </li>
             </ul>

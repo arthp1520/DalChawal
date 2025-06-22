@@ -3,10 +3,18 @@
 
 {% block body %}
 <div class="container mt-5">
-  <h2>@{{ user_profile.name }}</h2>
-  <p class="fw-bold text-dark">{{ user_profile.bio|default:"This user has not added a bio yet." }}</p>
 
-  <div class="d-flex gap-3">
+  <!-- Profile Image -->
+  <div class="text-center mb-4">
+    <img src="{{ user_profile.profile_image.url }}" alt="Profile Image"
+         class="rounded-circle shadow"
+         style="width: 120px; height: 120px; object-fit: cover;">
+  </div>
+
+  <h2 class="text-center">@{{ user_profile.name }}</h2>
+  <p class="fw-bold text-dark text-center">{{ user_profile.bio|default:"This user has not added a bio yet." }}</p>
+
+  <div class="d-flex justify-content-center gap-3 mb-4">
     <div><strong>{{ followers_count }}</strong> Followers</div>
     <div><strong>{{ following_count }}</strong> Following</div>
   </div>

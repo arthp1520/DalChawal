@@ -6,33 +6,40 @@
     <h2 class="mb-4  text-primary">Explore Profiles</h2>
 
     {% if users %}
-        <div class="row justify">
-            {% for user in users %}
-                <div class="col-md-4 mb-4">
-                    <div class="card shadow-sm border-0" style="background-color: #e3f2fd; border-radius: 15px;">
-                        <div class="card-body text-center">
-                            <h5 class="card-title mb-2">
-                                <a href="{% url 'public_profile' user.id %}" class="text-decoration-none text-dark fw-bold">
-                                    @{{ user.name }}
-                                </a>
-                            </h5>
-                            <p class="text-muted mb-3">{{ user.bio|default:"No bio added yet." }}</p>
+    <div class="row justify">
+        {% for user in users %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm border-0" style="background-color: #e3f2fd; border-radius: 15px;">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-2">
+                        {% if user.profile_image %}
+                        <img src="{{ user.profile_image.url }}" class="rounded-circle mb-2" width="80" height="80"
+                            style="object-fit: cover;">
+                        {% else %}
+                        
+                        {% endif %}
 
-                            <form method="post" action="{% url 'toggle_follow' user.id %}">
-                                {% csrf_token %}
-                                {% if user in current_user.following.all %}
-                                    <button type="submit" class="btn btn-outline-danger btn-sm px-4">Unfollow</button>
-                                {% else %}
-                                    <button type="submit" class="btn btn-outline-primary btn-sm px-4">Follow</button>
-                                {% endif %}
-                            </form>
-                        </div>
-                    </div>
+                        <a href="{% url 'public_profile' user.id %}" class="text-decoration-none text-dark fw-bold">
+                            @{{ user.name }}
+                        </a>
+                    </h5>
+                    <p class="text-muted mb-3">{{ user.bio|default:"No bio added yet." }}</p>
+
+                    <form method="post" action="{% url 'toggle_follow' user.id %}">
+                        {% csrf_token %}
+                        {% if user in current_user.following.all %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm px-4">Unfollow</button>
+                        {% else %}
+                        <button type="submit" class="btn btn-outline-primary btn-sm px-4">Follow</button>
+                        {% endif %}
+                    </form>
                 </div>
-            {% endfor %}
+            </div>
         </div>
+        {% endfor %}
+    </div>
     {% else %}
-        <p class="text-center text-muted">No users found.</p>
+    <p class="text-center text-muted">No users found.</p>
     {% endif %}
 </div>
 {% endblock %}

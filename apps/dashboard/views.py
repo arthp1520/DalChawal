@@ -41,10 +41,10 @@ from .models import Document
 from django.contrib import messages 
 
 # for thumbnail
-from pdf2image import convert_from_path
-from django.core.files.base import ContentFile
-import os
-from io import BytesIO
+# from pdf2image import convert_from_path
+# from django.core.files.base import ContentFile
+# import os
+# from io import BytesIO
 
 
 def login_required(view_func):
@@ -373,15 +373,18 @@ def edit_profile(request):
     if request.method == 'POST':
         name = request.POST.get('name')
         bio = request.POST.get('bio')
+        image = request.FILES.get('profile_image')
 
         user.name = name
         user.bio = bio
-        user.save()
 
+        if image:
+            user.profile_image = image
+
+        user.save()
         return redirect('profile')
 
     return render(request, 'dashboard/edit_profile.html', {'user': user})
-
 
 def delete_document(request, doc_id):
     user_id = request.session.get('user_id')

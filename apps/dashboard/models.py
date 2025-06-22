@@ -22,7 +22,8 @@ class User(models.Model):
     
     followers = models.ManyToManyField('self', symmetrical=False, related_name='following', blank=True)
     bio = models.TextField(blank=True, null=True)
-
+    profile_image = models.ImageField(upload_to='profile_images/',default="images\default-profile-icon.jpg", blank=True, null=True)
+    
 # ✅ Document model for file upload
 class Document(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
