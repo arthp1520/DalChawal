@@ -19,26 +19,30 @@
         <!-- Header Section -->
         <div class="d-flex align-items-center mb-3">
           {% if user.profile_image %}
-            <img src="{{ user.profile_image.url }}" alt="Profile Picture" class="rounded-circle me-3" width="80" height="80" style="object-fit: cover;">
-          {% else %}
+          <img src="{{ user.profile_image.url }}" alt="Profile Picture" class="rounded-circle me-3" width="80"
+            height="80" style="object-fit: cover;">
           {% endif %}
           <div>
             <h4 class="text-primary fw-bold">@{{ user.name }}</h4>
+            <p class="fw-semibold">{{ user.email }}</p>
             <p class="fw-semibold">{{ user.bio|default:"No bio added yet." }}</p>
             <div class="d-flex gap-3 small">
-              <span><strong>{{ followers_count }}</strong> Followers</span>
-              <span><strong>{{ following_count }}</strong> Following</span>
+              <a href="#" data-bs-toggle="modal" data-bs-target="#followersModal" class="text-decoration-none">
+                <strong>{{ followers_count }}</strong> Followers
+              </a>
+              <a href="#" data-bs-toggle="modal" data-bs-target="#followingModal" class="text-decoration-none">
+                <strong>{{ following_count }}</strong> Following
+              </a>
             </div>
           </div>
         </div>
-        
-          <div class="d-flex gap-2 mt-3 mt-md-0">
-            <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-primary ">Edit Profile</a>
-            <form method="POST" action="{% url 'logout' %}">
-              {% csrf_token %}
-              <button type="submit" class="btn btn-sm btn-outline-danger ">Logout</button>
-            </form>
-          </div>
+
+        <div class="d-flex gap-2 mt-3 mt-md-0">
+          <a href="{% url 'edit_profile' %}" class="btn btn-sm btn-primary">Edit Profile</a>
+          <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-sm btn-outline-danger">Logout</button>
+          </form>
         </div>
 
         <hr>
@@ -79,8 +83,7 @@
               {% if doc.thumbnail %}
               <img src="{{ doc.thumbnail.url }}" alt="Preview" width="100"><br>
               {% endif %}
-              <a href="{{ doc.file.url }}">{{ doc.file.name|slice:"10:" }}</a>
-              </a><br>
+              <a href="{{ doc.file.url }}" target="_blank">{{ doc.file.name|slice:"10:" }}</a><br>
               <small class="text-muted">Uploaded on {{ doc.uploaded_at|date:"d M Y H:i" }}</small><br>
               <small class="text-secondary">{{ doc.description }}</small>
             </div>
@@ -88,7 +91,7 @@
               <a href="{% url 'update_document' doc.id %}" class="btn btn-sm btn-primary">Edit Dox</a>
               <form method="POST" action="{% url 'delete_document' doc.id %}">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-outline-danger ">Delete Dox</button>
+                <button type="submit" class="btn btn-sm btn-outline-danger">Delete Dox</button>
               </form>
             </div>
           </div>
@@ -97,7 +100,6 @@
           <p class="text-muted">No documents uploaded yet.</p>
           {% endif %}
         </div>
-
 
         <hr>
 
@@ -112,6 +114,78 @@
     </div>
   </div>
 
+  <!-- MODAL: Followers -->
+  <div class="modal fade" id="followersModal" tabindex="-1" aria-labelledby="followersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="followersModalLabel">Followers</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% if followers %}
+          <ul class="list-group">
+            {% for f in followers %}
+            <li class="list-group-item d-flex align-items-center gap-3">
+              {% if f.profile_image %}
+              <img src="{{ f.profile_image.url }}" alt="Profile" width="40" height="40" class="rounded-circle"
+                style="object-fit: cover;">
+              {% else %}
+              <img src="{% static 'default_profile.png' %}" alt="Default" width="40" height="40" class="rounded-circle">
+              {% endif %}
+
+              <div>
+                <a href="{% url 'public_profile' f.id %}" class="fw-bold text-decoration-none">@{{ f.name }}</a><br>
+                <small class="text-muted">{{ f.bio|default:"No bio available." }}</small>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="text-muted">No followers yet.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Following -->
+  <div class="modal fade" id="followingModal" tabindex="-1" aria-labelledby="followingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="followingModalLabel">Following</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          {% if following %}
+          <ul class="list-group">
+            {% for f in following %}
+            <li class="list-group-item d-flex align-items-center gap-3">
+              {% if f.profile_image %}
+              <img src="{{ f.profile_image.url }}" alt="Profile" width="40" height="40" class="rounded-circle"
+                style="object-fit: cover;">
+              {% else %}
+              <img src="{% static 'default_profile.png' %}" alt="Default" width="40" height="40" class="rounded-circle">
+              {% endif %}
+
+              <div>
+                <a href="{% url 'public_profile' f.id %}" class="fw-bold text-decoration-none">@{{ f.name }}</a><br>
+                <small class="text-muted">{{ f.bio|default:"No bio available." }}</small>
+              </div>
+            </li>
+
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="text-muted">Not following anyone yet.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 

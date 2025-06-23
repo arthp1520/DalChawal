@@ -258,28 +258,21 @@ def profile(request):
             file=uploaded_file
         )
 
-        # Check if file is a PDF
-        if uploaded_file.name.endswith('.pdf'):
-            pdf_path = doc.file.path
-            pages = convert_from_path(pdf_path, first_page=1, last_page=1)
-            if pages:
-                img_io = BytesIO()
-                pages[0].save(img_io, format='JPEG')
-                img_name = os.path.basename(uploaded_file.name).replace('.pdf', '.jpg')
-                doc.thumbnail.save(img_name, ContentFile(img_io.getvalue()), save=True)
-
-        messages.success(request, "Document uploaded successfully.")
-
     uploaded_docs = Document.objects.filter(user=user).order_by('-uploaded_at')
-    followers_count = user.followers.count()
-    following_count = user.following.count()
+
+    # 💡 These lines fetch the actual users, not just counts
+    followers = user.followers.all()
+    following = user.following.all()
 
     return render(request, 'dashboard/profile.html', {
         'user': user,
         'uploaded_docs': uploaded_docs,
-        'followers_count': followers_count,
-        'following_count': following_count
+        'followers_count': followers.count(),
+        'following_count': following.count(),
+        'followers': followers,
+        'following': following
     })
+
 
 
 @login_required

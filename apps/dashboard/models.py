@@ -19,7 +19,6 @@ class User(models.Model):
     password = models.CharField(max_length=255)
     otp = models.IntegerField(null=True, blank=True)
     is_active = models.BooleanField(default=False)
-    
     followers = models.ManyToManyField('self', symmetrical=False, related_name='following', blank=True)
     bio = models.TextField(blank=True, null=True)
     profile_image = models.ImageField(upload_to='profile_images/',default="images\default-profile-icon.jpg", blank=True, null=True)

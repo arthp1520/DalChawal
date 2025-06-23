@@ -6,9 +6,8 @@
 
   <!-- Profile Image -->
   <div class="text-center mb-4">
-    <img src="{{ user_profile.profile_image.url }}" alt="Profile Image"
-         class="rounded-circle shadow"
-         style="width: 120px; height: 120px; object-fit: cover;">
+    <img src="{{ user_profile.profile_image.url }}" alt="Profile Image" class="rounded-circle shadow"
+      style="width: 120px; height: 120px; object-fit: cover;">
   </div>
 
   <h2 class="text-center">@{{ user_profile.name }}</h2>
@@ -34,7 +33,12 @@
         <strong>{{ doc.title }}</strong><br>
         <small class="text-muted">{{ doc.description|default:"No description provided." }}</small><br>
         <span class="text-muted small">{{ doc.file.name|slice:"10:" }}</span>
+        <a href="{{ doc.file.url }}" target="_blank">{{ doc.file.name|slice:"10:" }}</a>
+        </a><br>
       </div>
+      {% if doc.thumbnail %}
+      <img src="{{ doc.thumbnail.url }}" alt="Preview" width="100" target="_blank"><br>
+      {% endif %}
       <a href="{{ doc.file.url }}" class="btn btn-outline-primary btn-sm mt-2 mt-md-0" download>Download</a>
     </li>
     {% endfor %}
