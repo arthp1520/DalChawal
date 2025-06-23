@@ -71,8 +71,12 @@
             class="bg-light rounded-3 d-flex justify-content-between align-items-center p-3 mb-2 border border-secondary-subtle">
             <div>
               <strong>{{ doc.title }}</strong><br>
-              <a href="{{ doc.file.url }}" target="_blank" class="text-decoration-none text-dark">
-                {{ doc.file.name|slice:"10:" }}
+              {% if doc.thumbnail %}
+              <img src="{{ doc.thumbnail.url }}" alt="Preview" width="100"><br>
+              {% endif %}
+              <strong>{{ doc.title }}</strong><br>
+              <a href="{{ doc.file.url }}">{{ doc.file.name|slice:"10:" }}</a>
+              {{ doc.file.name|slice:"10:" }}
               </a><br>
               <small class="text-muted">Uploaded on {{ doc.uploaded_at|date:"d M Y H:i" }}</small><br>
               <small class="text-secondary">{{ doc.description }}</small>

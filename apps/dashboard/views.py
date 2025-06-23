@@ -40,6 +40,13 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Document  
 from django.contrib import messages 
 
+# for thumbnail
+from pdf2image import convert_from_path
+from django.core.files.base import ContentFile
+import os
+from io import BytesIO
+
+
 def login_required(view_func):
     @wraps(view_func)
     def wrapper(request, *args, **kwargs):
@@ -47,6 +54,8 @@ def login_required(view_func):
             return redirect('sign_in')  # redirect to login page
         return view_func(request, *args, **kwargs)
     return wrapper
+
+
 
 def sign_in(request):
     if request.method == 'POST':
@@ -229,19 +238,49 @@ def index(request):
     })
 
 @login_required
-def public_profile(request, user_id):
-    user_profile = User.objects.get(id=user_id)
-    documents = Document.objects.filter(user=user_profile).order_by('-uploaded_at')
 
-    followers_count = user_profile.followers.count()
-    following_count = user_profile.following.count()
+def profile(request):
+    user_id = request.session.get('user_id')
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return redirect('sign_in')
 
-    return render(request, 'dashboard/public_profile.html', {
-        'user_profile': user_profile,
-        'documents': documents,
+    if request.method == 'POST' and request.FILES.get('document'):
+        uploaded_file = request.FILES['document']
+        title = request.POST.get('title')
+        description = request.POST.get('description')
+
+        doc = Document.objects.create(
+            user=user,
+            title=title,
+            description=description,
+            file=uploaded_file
+        )
+
+        # Check if file is a PDF
+        if uploaded_file.name.endswith('.pdf'):
+            pdf_path = doc.file.path
+            pages = convert_from_path(pdf_path, first_page=1, last_page=1)
+            if pages:
+                img_io = BytesIO()
+                pages[0].save(img_io, format='JPEG')
+                img_name = os.path.basename(uploaded_file.name).replace('.pdf', '.jpg')
+                doc.thumbnail.save(img_name, ContentFile(img_io.getvalue()), save=True)
+
+        messages.success(request, "Document uploaded successfully.")
+
+    uploaded_docs = Document.objects.filter(user=user).order_by('-uploaded_at')
+    followers_count = user.followers.count()
+    following_count = user.following.count()
+
+    return render(request, 'dashboard/profile.html', {
+        'user': user,
+        'uploaded_docs': uploaded_docs,
         'followers_count': followers_count,
         'following_count': following_count
     })
+
 
 @login_required
 def toggle_follow(request, user_id):
@@ -305,37 +344,22 @@ def delete_post(request, post_id):
 # PROFILE VIEWS
 # ================================
 @login_required
-def profile(request):
-    user_id = request.session.get('user_id')
+# apps/dashboard/views.py
 
-    try:
-        user = User.objects.get(id=user_id)
-    except User.DoesNotExist:
-        return redirect('sign_in')
+def public_profile(request, user_id):
+    user_profile = User.objects.get(id=user_id)
+    documents = Document.objects.filter(user=user_profile).order_by('-uploaded_at')
 
-    if request.method == 'POST' and request.FILES.get('document'):
-        uploaded_file = request.FILES['document']
-        title = request.POST.get('title', '')
-        description = request.POST.get('description', '')
+    followers_count = user_profile.followers.count()
+    following_count = user_profile.following.count()
 
-        Document.objects.create(
-            user=user,
-            file=uploaded_file,
-            title=title,
-            description=description
-        )
-        messages.success(request, "Document uploaded successfully.")
-
-    uploaded_docs = Document.objects.filter(user=user).order_by('-uploaded_at')
-    followers_count = user.followers.count()
-    following_count = user.following.count()
-
-    return render(request, 'dashboard/profile.html', {
-        'user': user,
-        'uploaded_docs': uploaded_docs,
+    return render(request, 'dashboard/public_profile.html', {
+        'user_profile': user_profile,
+        'documents': documents,
         'followers_count': followers_count,
         'following_count': following_count
     })
+
 
 
             
