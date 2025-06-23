@@ -13,7 +13,6 @@
   <style>
     body {
       background-color: #cce7ff;
-      /* AliceBlue background */
       background-image:
         radial-gradient(circle at 10% 20%, rgba(108, 117, 125, 0.05) 0%, transparent 20%),
         radial-gradient(circle at 90% 80%, rgba(13, 202, 240, 0.05) 0%, transparent 20%);
@@ -55,17 +54,17 @@
 </head>
 
 <body>
-    {% if error %}
-<div class="alert alert-danger text-center" role="alert">
-  {{ error }}
-</div>
-{% endif %}
+  {% if error %}
+  <div class="alert alert-danger text-center" role="alert">
+    {{ error }}
+  </div>
+  {% endif %}
 
-{% if success %}
-<div class="alert alert-success text-center" role="alert">
-  {{ success }}
-</div>
-{% endif %}
+  {% if success %}
+  <div class="alert alert-success text-center" role="alert">
+    {{ success }}
+  </div>
+  {% endif %}
 
   <main class="main-content mt-0">
     <div class="header-bg text-white py-5">
@@ -85,41 +84,71 @@
             <div class="card-body px-5 py-4">
               <form method="post" action="{% url 'sign_up' %}">
                 {% csrf_token %}
-                  <!-- name -->
-                  <div class="mb-3">
-                    <label class="form-label text-secondary">Name</label>
-                    <input type="name" class="form-control py-2" placeholder="Enter your Name" name="name" required>
-                  </div>
-                  <!-- name -->
+                
+                <!-- Name -->
+                <div class="mb-3">
+                  <label class="form-label text-secondary">Name</label>
+                  <input type="text" class="form-control py-2" placeholder="Enter your Name" name="name"
+                    value="{{ request.POST.name }}" required>
+                </div>
+
+                {% if name_suggestions %}
+                <div class="alert alert-info mt-2">
+                  <strong>Name is already taken so you can use::</strong>
+                  <ul class="list-unstyled mb-0">
+                    {% for suggestion in name_suggestions %}
+                    <li>
+                      <a href="#" class="name-suggestion text-decoration-none" data-name="{{ suggestion }}">
+                        {{ suggestion }}
+                      </a>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                {% endif %}
+
+                <!-- Email -->
                 <div class="mb-3">
                   <label class="form-label text-secondary">Email address</label>
-                  <input type="email" class="form-control py-2" placeholder="Enter your email" name="email" required>
+                  <input type="email" class="form-control py-2" placeholder="Enter your email" name="email"
+                    value="{{ request.POST.email }}" required>
                 </div>
+
+                <!-- Mobile -->
                 <div class="mb-3">
                   <label class="form-label text-secondary">Mobile number</label>
-                  <input type="text" class="form-control py-2" placeholder="+91 XXXXXXXXXX" name="mobile" required>
+                  <input type="text" class="form-control py-2" placeholder="+91 XXXXXXXXXX" name="mobile"
+                    value="{{ request.POST.mobile }}" required>
                 </div>
+
+                <!-- Password -->
                 <div class="mb-3">
                   <label class="form-label text-secondary">Password</label>
                   <input type="password" class="form-control py-2" placeholder="Create a password" name="password"
                     required>
                 </div>
+
+                <!-- Confirm Password -->
                 <div class="mb-3">
                   <label class="form-label text-secondary">Confirm Password</label>
                   <input type="password" class="form-control py-2" placeholder="Confirm your password"
                     name="confirm_password" required>
                 </div>
+
+                <!-- Terms -->
                 <div class="form-check mb-4">
                   <input class="form-check-input" type="checkbox" id="termsCheck" required>
                   <label class="form-check-label text-secondary" for="termsCheck">
                     I agree to the <a href="#" class="text-decoration-none">Terms and Conditions</a>
                   </label>
                 </div>
+
                 <div class="d-grid gap-2">
                   <button type="submit" class="btn btn-primary-custom btn-lg py-2 fw-bold">Sign Up</button>
                 </div>
               </form>
             </div>
+
             <div class="card-footer bg-white border-0 text-center pb-4">
               <p class="text-secondary mb-2">
                 <a href="#" class="text-decoration-none">Forgot password?</a>
@@ -142,6 +171,17 @@
       </p>
     </div>
   </footer>
+
+  <!-- Suggestion Click JS -->
+  <script>
+    document.querySelectorAll('.name-suggestion').forEach(item => {
+      item.addEventListener('click', function (e) {
+        e.preventDefault();
+        const selectedName = this.getAttribute('data-name');
+        document.querySelector('input[name="name"]').value = selectedName;
+      });
+    });
+  </script>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

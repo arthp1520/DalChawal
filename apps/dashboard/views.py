@@ -40,6 +40,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Document  
 from django.contrib import messages 
 
+from .helpers import generate_username_suggestions #for username suggestion
+from .models import User
+
+
 # for thumbnail
 # from pdf2image import convert_from_path
 # from django.core.files.base import ContentFile
@@ -95,6 +99,14 @@ def sign_up(request):
         mobile_ = request.POST['mobile']
         password_ = request.POST['password']
         confirm_password_ = request.POST['confirm_password']
+        
+        if User.objects.filter(name=name_).exists():
+            suggestions = generate_username_suggestions(name_)
+            return render(request, 'dashboard/sign_up.html', {
+                 'error': "Name already taken. Try one of these:",
+                 'name_suggestions': suggestions
+    })
+
         
         if not  is_email_verified:
             print("Invalid Email")

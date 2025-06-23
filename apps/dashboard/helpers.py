@@ -1,5 +1,6 @@
 import re
 from django import template
+import random
 
 def is_email_verified(email):
     # Basic email regex pattern
@@ -36,3 +37,15 @@ def is_valid_password(password):
     else:
         is_password = False, ','.join(errors)
     return is_password
+
+
+
+# helper.py
+import random
+
+def generate_username_suggestions(base_name, count=3):
+    suggestions = []
+    for _ in range(count):
+        number = random.randint(100, 999)
+        suggestions.append(f"{base_name}{number}")
+    return suggestions
