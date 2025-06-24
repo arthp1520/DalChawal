@@ -78,7 +78,7 @@ WSGI_APPLICATION = 'Dalc.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'CRUDDB.db',
+        'NAME': BASE_DIR / 'ParaDox.db',
     }
 }
 
