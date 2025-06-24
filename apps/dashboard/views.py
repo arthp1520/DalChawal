@@ -53,6 +53,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
  # ✅ move this to the top
 
+from .models import User, Post
 
 
 def login_required(view_func):
@@ -248,10 +249,15 @@ def index(request):
     else:
         users = User.objects.exclude(id=user_id)
 
+    documents = Document.objects.all().select_related('user')  # Ensure user is prefetched
+
     return render(request, 'dashboard/index.html', {
         'users': users,
-        'current_user': current_user
+        'current_user': current_user,
+        'documents': documents,  # ✅ pass this!
     })
+
+
 
 @login_required
 

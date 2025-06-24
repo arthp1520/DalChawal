@@ -136,8 +136,9 @@
                       class="rounded-circle">
                     {% endif %}
                     <div>
-                      <a href="{% url 'public_profile' f.id %}" class="fw-bold text-decoration-none">@{{ f.name
-                        }}</a><br>
+                      <a href="{% url 'public_profile' f.id %}" class="fw-bold text-decoration-none">@{{f.name|default:"Unnamed User"}}
+</a><br>
+                      
                       <small class="text-muted">{{ f.bio|default:"No bio available." }}</small>
                     </div>
                   </li>
@@ -173,8 +174,7 @@
                       class="rounded-circle">
                     {% endif %}
                     <div>
-                      <a href="{% url 'public_profile' f.id %}" class="fw-bold text-decoration-none">@{{ f.name
-                        }}</a><br>
+                      <a href="{% url 'public_profile' f.id %}" class="fw-bold text-decoration-none">@{{f.name}}</a><br>
                       <small class="text-muted">{{ f.bio|default:"No bio available." }}</small>
                     </div>
                   </li>
