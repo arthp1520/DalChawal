@@ -45,10 +45,14 @@ from .models import User
 
 
 # for thumbnail
-# from pdf2image import convert_from_path
-# from django.core.files.base import ContentFile
-# import os
-# from io import BytesIO
+# views.py
+
+import os
+from pdf2image import convert_from_path 
+from django.shortcuts import render, redirect
+from django.conf import settings
+ # ✅ move this to the top
+
 
 
 def login_required(view_func):
@@ -270,9 +274,28 @@ def profile(request):
             file=uploaded_file
         )
 
-    uploaded_docs = Document.objects.filter(user=user).order_by('-uploaded_at')
+        # ✅ Generate thumbnail if the file is a PDF
+        if uploaded_file.name.endswith('.pdf'):
+            pdf_path = os.path.join(settings.MEDIA_ROOT, doc.file.name)
+            try:
+                images = convert_from_path(
+                    pdf_path,
+                    first_page=1,
+                    last_page=1,
+                    poppler_path=r"C:\Users\agrea\Downloads\Release-24.08.0-0\poppler-24.08.0\Library\bin"
+                )
+                thumbnail_path = f"thumbnails/{doc.id}_thumb.jpg"
+                full_thumbnail_path = os.path.join(settings.MEDIA_ROOT, thumbnail_path)
+                os.makedirs(os.path.dirname(full_thumbnail_path), exist_ok=True)
+                images[0].save(full_thumbnail_path, 'JPEG')
 
-    # 💡 These lines fetch the actual users, not just counts
+                # Save thumbnail to model
+                doc.thumbnail = thumbnail_path
+                doc.save()
+            except Exception as e:
+                print("Thumbnail generation failed:", e)
+
+    uploaded_docs = Document.objects.filter(user=user).order_by('-uploaded_at')
     followers = user.followers.all()
     following = user.following.all()
 

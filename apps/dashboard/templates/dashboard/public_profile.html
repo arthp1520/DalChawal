@@ -1,4 +1,6 @@
 {% extends 'dashboard/base.html' %}
+{% load static %}
+
 {% block title %}{{ user_profile.name }}{% endblock %}
 
 {% block body %}
@@ -25,21 +27,23 @@
   <ul class="list-group">
     {% for doc in documents %}
     <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-      <div>
+      <div class="d-flex gap-3 align-items-center">
         {% if doc.thumbnail %}
-        <img src="{{ doc.thumbnail.url }}" alt="Preview" style="width: 100px;">
+        <img src="{{ doc.thumbnail.url }}" alt="Preview" style="width: 100px; object-fit: cover;">
+        {% else %}
+        <img src="{% static 'dashboard/image/default_thumbnail.png' %}" alt="No Preview" style="width: 100px; object-fit: cover;">
         {% endif %}
-
-        <strong>{{ doc.title }}</strong><br>
-        <small class="text-muted">{{ doc.description|default:"No description provided." }}</small><br>
-        <span class="text-muted small">{{ doc.file.name|slice:"10:" }}</span>
-        <a href="{{ doc.file.url }}" target="_blank">{{ doc.file.name|slice:"10:" }}</a>
-        </a><br>
+        <div>
+          <strong>{{ doc.title }}</strong><br>
+          <small class="text-muted">{{ doc.description|default:"No description provided." }}</small><br>
+          <a href="{{ doc.file.url }}" target="_blank" class="text-primary text-decoration-none">
+            View Dox
+          </a>
+        </div>
       </div>
-      {% if doc.thumbnail %}
-      <img src="{{ doc.thumbnail.url }}" alt="Preview" width="100" target="_blank"><br>
-      {% endif %}
-      <a href="{{ doc.file.url }}" class="btn btn-outline-primary btn-sm mt-2 mt-md-0" download>Download</a>
+      <a href="{{ doc.file.url }}" class="btn btn-warning btn-sm mt-2 mt-md-0" download>
+        Download
+      </a>
     </li>
     {% endfor %}
   </ul>
