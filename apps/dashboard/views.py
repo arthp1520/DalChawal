@@ -55,6 +55,32 @@ from django.conf import settings
 
 from .models import User, Post
 
+import random
+from django.shortcuts import render
+from .models import User, Document
+from django.shortcuts import render
+from .models import User, Document
+import random
+
+
+from django.shortcuts import render
+from .models import User, Document
+
+def search(request):
+    user_id = request.session.get('user_id')
+    current_user = User.objects.get(id=user_id)
+
+    query = request.GET.get('query', '')
+
+    users = User.objects.filter(name__icontains=query).exclude(id=user_id)
+    documents = Document.objects.filter(title__icontains=query)
+
+    return render(request, 'dashboard/search_results.html', {
+        'users': users,
+        'documents': documents,
+        'query': query,
+        'current_user': current_user,
+    })
 
 def login_required(view_func):
     @wraps(view_func)
@@ -239,23 +265,54 @@ def forgot_password(request):
 # DASHBOARD VIEWS
 # ================================
 @login_required
+
+
 def index(request):
-    query = request.GET.get('query')
     user_id = request.session.get('user_id')
     current_user = User.objects.get(id=user_id)
 
+    query = request.GET.get('query')
+    
     if query:
-        users = User.objects.filter(name__icontains=query).exclude(id=user_id)
+        users = list(User.objects.filter(name__icontains=query).exclude(id=user_id))
     else:
-        users = User.objects.exclude(id=user_id)
+        users = list(User.objects.exclude(id=user_id))
+        random.shuffle(users)
+        users = users[:10]
 
-    documents = Document.objects.all().select_related('user')  # Ensure user is prefetched
+    documents = list(Document.objects.all())
+    random.shuffle(documents)
+    documents = documents[:10]
 
     return render(request, 'dashboard/index.html', {
         'users': users,
-        'current_user': current_user,
-        'documents': documents,  # ✅ pass this!
+        'documents': documents,
+        'query': query,
+        'current_user': current_user
     })
+
+
+
+# views.py
+@login_required
+def explore(request):
+    user_id = request.session.get('user_id')
+    current_user = User.objects.get(id=user_id)
+
+    # Get all users (except current user) and documents
+    users = list(User.objects.exclude(id=user_id))
+    documents = list(Document.objects.all())
+
+    # Shuffle for randomness
+    random.shuffle(users)
+    random.shuffle(documents)
+
+    return render(request, 'dashboard/explore.html', {
+        'users': users,
+        'documents': documents,
+        'current_user': current_user
+    })
+
 
 
 
@@ -317,16 +374,22 @@ def profile(request):
 
 
 @login_required
+
+
 def toggle_follow(request, user_id):
-    current_user = User.objects.get(id=request.session['user_id'])
-    target_user = User.objects.get(id=user_id)
+    if request.method == 'POST':
+        current_user = get_object_or_404(User, id=request.session.get('user_id'))
+        target_user = get_object_or_404(User, id=user_id)
 
-    if target_user in current_user.following.all():
-        current_user.following.remove(target_user)
-    else:
-        current_user.following.add(target_user)
+        if current_user != target_user:
+            if target_user in current_user.following.all():
+                current_user.following.remove(target_user)
+            else:
+                current_user.following.add(target_user)
 
-    return redirect('index')
+        # ✅ Redirect back to public_profile instead of index
+        return redirect('public_profile', user_id=user_id)
+
 
 @login_required
 def show(request):
@@ -382,16 +445,20 @@ def delete_post(request, post_id):
 
 def public_profile(request, user_id):
     user_profile = User.objects.get(id=user_id)
+    current_user = User.objects.get(id=request.session.get('user_id'))
+    
     documents = Document.objects.filter(user=user_profile).order_by('-uploaded_at')
-
-    followers_count = user_profile.followers.count()
-    following_count = user_profile.following.count()
+    followers = user_profile.followers.all()
+    following = user_profile.following.all()
 
     return render(request, 'dashboard/public_profile.html', {
         'user_profile': user_profile,
+        'current_user': current_user,
         'documents': documents,
-        'followers_count': followers_count,
-        'following_count': following_count
+        'followers_count': followers.count(),
+        'following_count': following.count(),
+        'followers': followers,
+        'following': following
     })
 
 

@@ -17,6 +17,8 @@ urlpatterns = [
     path('edit-profile/', views.edit_profile, name='edit_profile'),
     path('delete-document/<int:doc_id>/', views.delete_document, name='delete_document'),
     path('email_verify/', views.email_verify, name='email_verify'),
+    path('explore/', views.explore, name='explore'),
+    path('follow/<int:user_id>/', views.toggle_follow, name='toggle_follow'),
     path('logout/',views.logout,name='logout'),
     
 

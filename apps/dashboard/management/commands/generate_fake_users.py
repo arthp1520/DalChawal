@@ -20,7 +20,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.WARNING("⚠️ No images found in static/images/profile_images"))
             return
 
-        for _ in range(15):
+        for _ in range(100):
             name = fake.user_name()
             email = fake.email()
             mobile = fake.msisdn()[:10]

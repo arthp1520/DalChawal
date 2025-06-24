@@ -3,6 +3,11 @@
 {% block title %}Home{% endblock %}
 
 {% block body %}
+<!-- <form class="d-flex" action="{% url 'index' %}" method="get" style="width: 350px;">
+  <input class="form-control me-2" type="search" name="query" placeholder="Search Profiles..."
+         value="{{ query|default:'' }}">
+  <button class="btn btn-outline-dark" type="submit">Search</button>
+</form> -->
 <div class="container mt-5">
     <h2 class="mb-4  text-primary">Explore Profiles</h2>
 
@@ -31,6 +36,7 @@
                         <button type="submit" class="btn btn-outline-primary btn-sm px-4">Follow</button>
                         {% endif %}
                     </form>
+
                 </div>
             </div>
         </div>
